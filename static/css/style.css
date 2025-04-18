@@ -1,0 +1,269 @@
+/* 基础样式 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #f5f7fa;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+    line-height: 1.6;
+    color: #333;
+    padding: 0;
+    margin: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+h1 {
+    color: #1a73e8;
+    font-size: 24px;
+    font-weight: 600;
+    margin: 15px 0;
+}
+
+h3 {
+    font-size: 18px;
+    font-weight: 600;
+    margin: 10px 0;
+    color: #333;
+}
+
+h4 {
+    font-size: 16px;
+    margin: 10px 0;
+}
+
+/* 表单卡片 */
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    margin-bottom: 20px;
+    padding: 20px;
+}
+
+.form-group {
+    margin-bottom: 15px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 500;
+}
+
+.input-group {
+    display: flex;
+    position: relative;
+}
+
+.input-icon {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px 10px 10px 40px;
+    border: 1px solid #ddd;
+    border-right: none;
+    border-radius: 5px 0 0 5px;
+    font-size: 16px;
+    height: 42px;
+}
+
+button {
+    background-color: #1a73e8;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-weight: 500;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+button:hover {
+    background-color: #1563cb;
+}
+
+#checkButton {
+    padding: 0 15px;
+    height: 42px;
+    border-radius: 0 5px 5px 0;
+    white-space: nowrap;
+}
+
+.form-text {
+    font-size: 12px;
+    color: #666;
+    margin-top: 5px;
+}
+
+/* 搜索选项 */
+.search-options {
+    margin-top: 15px;
+}
+
+.option-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-size: 14px;
+    color: #555;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-right: 8px;
+    accent-color: #1a73e8;
+    width: 16px;
+    height: 16px;
+}
+
+/* 验证码区域 */
+.verification-code-box {
+    background-color: #e7f7ed;
+    border: 1px solid #c3e6cb;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+.code-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.copy-btn {
+    padding: 5px 10px;
+    font-size: 14px;
+    border-radius: 4px;
+    background-color: transparent;
+    color: #28a745;
+    border: 1px solid #28a745;
+}
+
+.copy-btn:hover {
+    background-color: #28a745;
+    color: white;
+}
+
+.code-display {
+    text-align: center;
+    font-size: 28px;
+    font-family: 'Courier New', monospace;
+    font-weight: bold;
+    color: #28a745;
+    letter-spacing: 5px;
+    padding: 10px 0;
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    user-select: all;
+}
+
+/* 邮件列表 */
+.emails-container {
+    margin-top: 25px;
+}
+
+.email-item {
+    background-color: white;
+    border: 1px solid #e8e8e8;
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+.email-header {
+    border-bottom: 1px solid #f1f1f1;
+    padding-bottom: 10px;
+    margin-bottom: 10px;
+}
+
+.email-meta {
+    color: #666;
+    font-size: 14px;
+}
+
+.email-body {
+    white-space: pre-wrap;
+    font-size: 14px;
+    line-height: 1.5;
+    max-height: 250px;
+    overflow-y: auto;
+    background-color: #f9f9fa;
+    padding: 15px;
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.highlight {
+    background-color: #fffacd;
+    color: #000;
+    padding: 2px 4px;
+    border-radius: 3px;
+    font-weight: bold;
+}
+
+/* 提示框 */
+.alert-box {
+    padding: 15px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+.warning {
+    background-color: #fff3cd;
+    border: 1px solid #f0db87;
+    color: #856404;
+}
+
+.error {
+    background-color: #f8d7da;
+    border: 1px solid #f5c6cb;
+    color: #721c24;
+}
+
+/* 加载动画 */
+.loading-box {
+    text-align: center;
+    padding: 20px;
+    margin: 20px 0;
+}
+
+/* 响应式调整 */
+@media (max-width: 600px) {
+    .container {
+        padding: 10px;
+    }
+    
+    input[type="text"] {
+        font-size: 14px;
+    }
+    
+    .code-display {
+        font-size: 24px;
+    }
+} 
