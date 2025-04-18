@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>搜索历史 - Cursor 验证码获取工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .history-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 15px;
+        }
+        
+        .page-header h1 {
+            margin: 0;
+        }
+        
+        .btn-default {
+            padding: 8px 15px;
+            background-color: #f8f9fa;
+            color: #333;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+        
+        .btn-default:hover {
+            background-color: #e9ecef;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .history-table th,
+        .history-table td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .history-table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .code-cell {
+            font-family: 'Courier New', monospace;
+            font-weight: 600;
+            color: #28a745;
+        }
+        
+        .empty-message {
+            text-align: center;
+            padding: 30px;
+            color: #6c757d;
+            font-style: italic;
+        }
+        
+        .navbar {
+            background-color: #1a73e8;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+        }
+        
+        .user-credits {
+            margin-bottom: 10px;
+            text-align: right;
+            font-size: 14px;
+        }
+        
+        .remaining-count {
+            color: #1a73e8;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">Cursor 验证码获取工具</a>
+        <div class="navbar-nav">
+            <a href="{{ url_for('index') }}" class="nav-link">首页</a>
+            <a href="{{ url_for('instructions') }}" class="nav-link">使用说明</a>
+            <a href="{{ url_for('history') }}" class="nav-link active">历史记录</a>
+            <a href="{{ url_for('recharge') }}" class="nav-link">充值</a>
+            <a href="{{ url_for('user_settings') }}" class="nav-link">设置</a>
+            <a href="{{ url_for('logout') }}" class="nav-link">退出登录</a>
+        </div>
+    </div>
+    
+    <div class="history-container">
+        <div class="page-header">
+            <h1>搜索历史</h1>
+            <div>
+                <div class="user-credits">剩余验证码: <span class="remaining-count">{{ current_user.remaining_searches }}</span></div>
+                <a href="{{ url_for('index') }}" class="btn-default">返回首页</a>
+            </div>
+        </div>
+        
+        {% if searches %}
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>收件人筛选</th>
+                    <th>验证码</th>
+                    <th>搜索时间</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for search in searches %}
+                <tr>
+                    <td>{{ search.recipient_filter }}</td>
+                    <td class="code-cell">{{ search.verification_code }}</td>
+                    <td>{{ search.search_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="empty-message">
+            <p>暂无搜索历史记录</p>
+        </div>
+        {% endif %}
+    </div>
+</body>
+</html> 

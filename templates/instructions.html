@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>使用说明 - Cursor 验证码获取工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        .navbar {
+            background-color: #1a73e8;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+        }
+        
+        .instructions-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+            padding: 25px;
+            margin-bottom: 20px;
+        }
+        
+        .section h2 {
+            color: #1a73e8;
+            margin-top: 0;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 10px;
+        }
+        
+        .instruction-step {
+            margin-bottom: 20px;
+            padding-left: 30px;
+            position: relative;
+        }
+        
+        .instruction-step:before {
+            content: "";
+            position: absolute;
+            left: 0;
+            top: 2px;
+            width: 22px;
+            height: 22px;
+            background-color: #1a73e8;
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .instruction-step:nth-child(1):before { content: "1"; }
+        .instruction-step:nth-child(2):before { content: "2"; }
+        .instruction-step:nth-child(3):before { content: "3"; }
+        .instruction-step:nth-child(4):before { content: "4"; }
+        .instruction-step:nth-child(5):before { content: "5"; }
+        .instruction-step:nth-child(6):before { content: "6"; }
+        
+        .instruction-step h3 {
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .instruction-step p {
+            margin-top: 0;
+            line-height: 1.6;
+            color: #555;
+        }
+        
+        .tips-list {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        
+        .tips-list li {
+            position: relative;
+            padding-left: 25px;
+            margin-bottom: 10px;
+            line-height: 1.5;
+        }
+        
+        .tips-list li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            top: 0;
+            color: #28a745;
+            font-weight: bold;
+        }
+        
+        .warning-box {
+            background-color: #fff3cd;
+            border-left: 4px solid #ffc107;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+        }
+        
+        .warning-box h3 {
+            margin-top: 0;
+            color: #856404;
+        }
+        
+        .warning-box p {
+            margin-bottom: 0;
+            color: #856404;
+        }
+        
+        .code-example {
+            background-color: #f8f9fa;
+            border-radius: 5px;
+            padding: 15px;
+            font-family: monospace;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">Cursor 验证码获取工具</a>
+        <div class="navbar-nav">
+            <a href="{{ url_for('index') }}" class="nav-link">首页</a>
+            <a href="{{ url_for('instructions') }}" class="nav-link active">使用说明</a>
+            <a href="{{ url_for('history') }}" class="nav-link">历史记录</a>
+            <a href="{{ url_for('recharge') }}" class="nav-link">充值</a>
+            <a href="{{ url_for('user_settings') }}" class="nav-link">设置</a>
+            <a href="{{ url_for('logout') }}" class="nav-link">退出登录</a>
+        </div>
+    </div>
+    
+    <div class="instructions-container">
+        <div class="section">
+            <h2>Cursor验证码获取工具使用说明</h2>
+            
+            <div class="instruction-step">
+                <h3>邮箱设置</h3>
+                <p>在Cursor官网进行注册或登录时，请使用以下格式的邮箱：</p>
+                <ul>
+                    <li><strong>邮箱前缀：</strong>自定义输入，建议使用复杂一点的前缀以防止与其他用户重复</li>
+                    <li><strong>邮箱后缀：</strong>统一使用 <code>@cgw.mom</code></li>
+                </ul>
+                <div class="code-example">
+                    示例: yourname123@cgw.mom<br>
+                    建议: 使用字母、数字组合的复杂前缀，如 john.smith2024@cgw.mom
+                </div>
+            </div>
+            
+            <div class="instruction-step">
+                <h3>获取验证码流程</h3>
+                <p>请按照以下步骤操作：</p>
+                <ol>
+                    <li>先在Cursor官网填写您使用的邮箱地址（yourname@cgw.mom）并请求验证码</li>
+                    <li>Cursor系统会向该邮箱发送验证码</li>
+                    <li>回到本工具页面，在搜索框中输入您使用的邮箱前缀（如yourname）</li>
+                    <li>点击"获取验证码"按钮</li>
+                    <li>系统会自动搜索并提取验证码</li>
+                </ol>
+            </div>
+            
+            <div class="instruction-step">
+                <h3>多次尝试</h3>
+                <p>由于邮件接收有一定延迟，验证码可能不会立即显示：</p>
+                <ul>
+                    <li>请确保在Cursor官网请求验证码后再使用本工具获取</li>
+                    <li>如果首次没有获取到验证码，请稍等片刻后多点击几次"获取验证码"按钮</li>
+                    <li>本系统不是实时更新的，可能需要多次尝试才能获取到最新验证码</li>
+                    <li>未获取到验证码不会消耗您的使用次数</li>
+                </ul>
+            </div>
+            
+            <div class="instruction-step">
+                <h3>筛选选项说明</h3>
+                <p>系统提供两个筛选选项以提高验证码获取的准确性：</p>
+                <ul>
+                    <li><strong>只搜索未读邮件：</strong>默认开启，仅查找新收到的邮件</li>
+                    <li><strong>只搜索Cursor发送的邮件：</strong>默认开启，过滤出Cursor官方发送的邮件</li>
+                </ul>
+                <p>建议：初次使用时保持这两个选项为开启状态</p>
+            </div>
+            
+            <div class="instruction-step">
+                <h3>使用频率与充值</h3>
+                <p>每个账户有免费的初始搜索次数，之后需要充值：</p>
+                <ul>
+                    <li>新用户默认赠送3次免费搜索次数</li>
+                    <li>当搜索次数用完后，需要通过卡密充值获取更多使用次数</li>
+                    <li>未获取到验证码的搜索不会消耗次数</li>
+                    <li>充值页面提供多种面额的充值选项</li>
+                </ul>
+            </div>
+            
+            <div class="instruction-step">
+                <h3>常见问题解答</h3>
+                <ul class="tips-list">
+                    <li><strong>验证码未显示：</strong>请确认邮箱前缀输入正确，并多次尝试获取</li>
+                    <li><strong>验证码已过期：</strong>Cursor验证码通常在10分钟内有效，请及时使用</li>
+                    <li><strong>搜索次数不减少：</strong>未成功获取到验证码时，系统不会扣减您的搜索次数</li>
+                    <li><strong>最佳实践：</strong>先在Cursor官网请求验证码，等待10-30秒后再使用本工具获取</li>
+                </ul>
+            </div>
+            
+            <div class="warning-box">
+                <h3>免责声明</h3>
+                <p>本网站仅供学习和研究使用，禁止用于任何非法用途或违反Cursor使用条款的活动。用户需自行承担使用本工具的一切责任。</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html> 
