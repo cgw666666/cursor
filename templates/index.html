@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cursor 验证码获取工具</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <style>
+        /* 内联关键样式以加快渲染 */
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid rgba(0, 0, 0, 0.1);
+            border-radius: 50%;
+            border-top: 4px solid #1a73e8;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .icon { 
+            display: inline-block;
+            width: 24px;
+            height: 24px;
+            background-repeat: no-repeat;
+            background-position: center;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .icon-email { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%231a73e8'%3E%3Cpath d='M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 14H4V8l8 5 8-5v10zm-8-7L4 6h16l-8 5z'%3E%3C/path%3E%3C/svg%3E"); }
+        .icon-user { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%236c757d'%3E%3Cpath d='M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z'%3E%3C/path%3E%3C/svg%3E"); }
+        .icon-search { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z'%3E%3C/path%3E%3C/svg%3E"); }
+        .icon-key { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2328a745'%3E%3Cpath d='M12.65 10C11.83 7.67 9.61 6 7 6c-3.31 0-6 2.69-6 6s2.69 6 6 6c2.61 0 4.83-1.67 5.65-4H17v4h4v-4h2v-4H12.65zM7 14c-1.1 0-2-.9-2-2s.9-2 2-2 2 .9 2 2-.9 2-2 2z'%3E%3C/path%3E%3C/svg%3E"); }
+        .icon-copy { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%2328a745'%3E%3Cpath d='M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm0 16H8V7h11v14z'%3E%3C/path%3E%3C/svg%3E"); }
+        .icon-list { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23333'%3E%3Cpath d='M3 13h2v-2H3v2zm0 4h2v-2H3v2zm0-8h2V7H3v2zm4 4h14v-2H7v2zm0 4h14v-2H7v2zM7 7v2h14V7H7z'%3E%3C/path%3E%3C/svg%3E"); }
+        .icon-warning { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23f0ad4e'%3E%3Cpath d='M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z'%3E%3C/path%3E%3C/svg%3E"); }
+        .icon-error { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23dc3545'%3E%3Cpath d='M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-2h2v2zm0-4h-2V7h2v6z'%3E%3C/path%3E%3C/svg%3E"); }
+        .d-none { display: none; }
+        
+        .navbar {
+            background-color: #1a73e8;
+            color: white;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        
+        .navbar-brand {
+            font-size: 20px;
+            font-weight: 600;
+            color: white;
+            text-decoration: none;
+        }
+        
+        .navbar-nav {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-link {
+            color: rgba(255, 255, 255, 0.85);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+        
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+        }
+        
+        .user-welcome {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .remaining-count {
+            color: #1a73e8;
+            font-weight: bold;
+        }
+        
+        .recharge-link {
+            color: #1a73e8;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        
+        .recharge-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        <a href="{{ url_for('index') }}" class="navbar-brand">Cursor 验证码获取工具</a>
+        <div class="navbar-nav">
+            <a href="{{ url_for('index') }}" class="nav-link active">首页</a>
+            <a href="{{ url_for('instructions') }}" class="nav-link">使用说明</a>
+            <a href="{{ url_for('history') }}" class="nav-link">历史记录</a>
+            <a href="{{ url_for('recharge') }}" class="nav-link">充值</a>
+            <a href="{{ url_for('user_settings') }}" class="nav-link">设置</a>
+            <a href="{{ url_for('logout') }}" class="nav-link">退出登录</a>
+        </div>
+    </div>
+    
+    <div class="container">
+        <div class="header">
+            <h1><span class="icon icon-email"></span>Cursor 验证码获取工具</h1>
+        </div>
+        
+        <div class="user-welcome">
+            欢迎您，{{ current_user.username }} - 剩余验证码次数：<span class="remaining-count">{{ current_user.remaining_searches }}</span>
+        </div>
+        
+        <div class="card">
+            <form id="emailForm">
+                <div class="form-group">
+                    <label for="recipient">收件人名称筛选</label>
+                    <div class="input-group">
+                        <span class="input-icon"><span class="icon icon-user"></span></span>
+                        <input type="text" id="recipient" placeholder="输入收件人名称（用于筛选邮件，例如：张三）" required>
+                        <button type="submit" id="checkButton">
+                            <span class="icon icon-search"></span>获取验证码
+                        </button>
+                    </div>
+                    <div class="form-text">使用固定邮箱 2641537225@qq.com 进行接收</div>
+                </div>
+                
+                <div class="search-options">
+                    <div class="option-group">
+                        <div class="help-text" style="margin-bottom: 10px; color: #666; font-size: 14px;">
+                            为了获取更精确的验证码，我们会自动使用以下筛选条件：
+                        </div>
+                        <label class="checkbox-label disabled">
+                            <input type="checkbox" id="unreadOnly" checked disabled>
+                            <span>只搜索未读邮件</span>
+                        </label>
+                        <label class="checkbox-label disabled">
+                            <input type="checkbox" id="fromCursorOnly" checked disabled>
+                            <span>只搜索 Cursor 发送的邮件</span>
+                        </label>
+                    </div>
+                    <div class="recharge-hint" style="margin-top: 10px; text-align: right;">
+                        <a href="{{ url_for('recharge') }}" class="recharge-link">充值验证码</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+        
+        <div id="loadingIndicator" class="d-none loading-box">
+            <div class="loading-spinner"></div>
+            <p>正在查找邮件，请稍候...</p>
+        </div>
+        
+        <div id="resultSection" class="d-none">
+            <div class="verification-code-box">
+                <div class="code-header">
+                    <h3><span class="icon icon-key"></span>验证码</h3>
+                    <button class="copy-btn" id="copyButton">
+                        <span class="icon icon-copy"></span>复制
+                    </button>
+                </div>
+                <div class="code-display">
+                    <span id="verificationCode">------</span>
+                </div>
+            </div>
+            
+            <div class="emails-container">
+                <h3><span class="icon icon-list"></span>找到的邮件</h3>
+                <div id="emailList">
+                    <!-- Emails will be inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <div id="noResultSection" class="d-none alert-box warning">
+            <span class="icon icon-warning"></span>
+            未找到匹配的邮件，请检查筛选条件或稍后再试。
+        </div>
+        
+        <div id="errorSection" class="d-none alert-box error">
+            <span class="icon icon-error"></span>
+            <span id="errorMessage"></span>
+        </div>
+    </div>
+    
+    <script>
+        // 内联JS以避免额外的请求
+        document.addEventListener('DOMContentLoaded', function() {
+            // 获取DOM元素
+            const emailForm = document.getElementById('emailForm');
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const resultSection = document.getElementById('resultSection');
+            const noResultSection = document.getElementById('noResultSection');
+            const errorSection = document.getElementById('errorSection');
+            const emailList = document.getElementById('emailList');
+            const verificationCodeSpan = document.getElementById('verificationCode');
+            const errorMessage = document.getElementById('errorMessage');
+            const copyButton = document.getElementById('copyButton');
+            
+            // 复制验证码功能
+            copyButton.addEventListener('click', function() {
+                const code = verificationCodeSpan.textContent;
+                navigator.clipboard.writeText(code).then(function() {
+                    const originalText = copyButton.innerHTML;
+                    copyButton.innerHTML = '<span class="icon icon-copy"></span>已复制';
+                    setTimeout(function() {
+                        copyButton.innerHTML = originalText;
+                    }, 2000);
+                });
+            });
+            
+            // 表单提交事件
+            emailForm.addEventListener('submit', function(e) {
+                e.preventDefault();
+                
+                // 获取收件人筛选名称
+                const recipient = document.getElementById('recipient').value.trim();
+                const unreadOnly = true; // 强制为true
+                const fromCursorOnly = true; // 强制为true
+                
+                if (!recipient) {
+                    alert('请输入收件人名称');
+                    return;
+                }
+                
+                // 初始搜索
+                searchEmails(recipient);
+                
+                // 禁用按钮，显示正在自动重试
+                const checkButton = document.getElementById('checkButton');
+                checkButton.disabled = true;
+                checkButton.innerHTML = '<span class="icon icon-search"></span>正在自动重试...';
+                
+                // 设置自动重试，每5秒重试一次，直到找到验证码或超时
+                if (window.retryTimer) {
+                    clearInterval(window.retryTimer);
+                }
+                if (window.retryTimeoutTimer) {
+                    clearTimeout(window.retryTimeoutTimer);
+                }
+                
+                // 定义重试函数
+                window.retryTimer = setInterval(function() {
+                    // 如果结果区域已显示（说明找到了验证码），则停止重试
+                    if (!resultSection.classList.contains('d-none')) {
+                        clearInterval(window.retryTimer);
+                        window.retryTimer = null;
+                        checkButton.disabled = false;
+                        checkButton.innerHTML = '<span class="icon icon-search"></span>获取验证码';
+                        return;
+                    }
+                    
+                    // 继续搜索
+                    searchEmails(recipient);
+                }, 5000); // 每5秒重试一次
+                
+                // 设置10分钟超时
+                window.retryTimeoutTimer = setTimeout(function() {
+                    if (window.retryTimer) {
+                        clearInterval(window.retryTimer);
+                        window.retryTimer = null;
+                    }
+                    
+                    // 恢复按钮状态
+                    checkButton.disabled = false;
+                    checkButton.innerHTML = '<span class="icon icon-search"></span>获取验证码';
+                    
+                    // 如果还没找到验证码，显示超时信息
+                    if (resultSection.classList.contains('d-none')) {
+                        loadingIndicator.classList.add('d-none');
+                        errorMessage.textContent = '自动搜索超时（10分钟）。验证码可能尚未发送，请确认在Cursor网站请求了验证码后再试。';
+                        errorSection.classList.remove('d-none');
+                    }
+                }, 10 * 60 * 1000); // 10分钟超时
+            });
+            
+            // 搜索邮件的函数
+            function searchEmails(recipient) {
+                // 显示加载指示器
+                loadingIndicator.classList.remove('d-none');
+                resultSection.classList.add('d-none');
+                noResultSection.classList.add('d-none');
+                errorSection.classList.add('d-none');
+                
+                // 发送请求获取邮件
+                fetch('/check_emails', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ 
+                        recipient: recipient,
+                        unreadOnly: true,
+                        fromCursorOnly: true
+                    }),
+                })
+                .then(response => response.json())
+                .then(data => {
+                    // 隐藏加载指示器
+                    loadingIndicator.classList.add('d-none');
+                    
+                    // 检查是否有错误
+                    if (data.need_recharge) {
+                        errorMessage.textContent = data.error;
+                        errorSection.classList.remove('d-none');
+                        // 显示充值提示
+                        errorMessage.innerHTML = data.error + ' <a href="{{ url_for("recharge") }}" class="recharge-link">立即充值</a>';
+                        // 停止重试
+                        if (window.retryTimer) {
+                            clearInterval(window.retryTimer);
+                            window.retryTimer = null;
+                        }
+                        if (window.retryTimeoutTimer) {
+                            clearTimeout(window.retryTimeoutTimer);
+                            window.retryTimeoutTimer = null;
+                        }
+                        // 恢复按钮状态
+                        document.getElementById('checkButton').disabled = false;
+                        document.getElementById('checkButton').innerHTML = '<span class="icon icon-search"></span>获取验证码';
+                        return;
+                    } else if (data.emails && data.emails.length > 0 && data.emails[0].error) {
+                        errorMessage.textContent = data.emails[0].error;
+                        errorSection.classList.remove('d-none');
+                        // 停止重试
+                        if (window.retryTimer) {
+                            clearInterval(window.retryTimer);
+                            window.retryTimer = null;
+                        }
+                        if (window.retryTimeoutTimer) {
+                            clearTimeout(window.retryTimeoutTimer);
+                            window.retryTimeoutTimer = null;
+                        }
+                        // 恢复按钮状态
+                        document.getElementById('checkButton').disabled = false;
+                        document.getElementById('checkButton').innerHTML = '<span class="icon icon-search"></span>获取验证码';
+                        return;
+                    }
+                    
+                    // 更新剩余次数显示
+                    if (data.remaining_searches !== undefined) {
+                        document.querySelector('.remaining-count').textContent = data.remaining_searches;
+                    }
+                    
+                    // 显示验证码
+                    if (data.verification_code) {
+                        verificationCodeSpan.textContent = data.verification_code;
+                        resultSection.classList.remove('d-none');
+                        
+                        // 渲染邮件列表
+                        renderEmails(data.emails);
+                        
+                        // 成功获取验证码，清除重试计时器
+                        if (window.retryTimer) {
+                            clearInterval(window.retryTimer);
+                            window.retryTimer = null;
+                        }
+                        if (window.retryTimeoutTimer) {
+                            clearTimeout(window.retryTimeoutTimer);
+                            window.retryTimeoutTimer = null;
+                        }
+                        
+                        // 恢复按钮状态
+                        document.getElementById('checkButton').disabled = false;
+                        document.getElementById('checkButton').innerHTML = '<span class="icon icon-search"></span>获取验证码';
+                    } else {
+                        // 没有找到匹配的邮件，这次搜索不显示提示，会继续自动重试
+                        // noResultSection.classList.remove('d-none');
+                    }
+                })
+                .catch(error => {
+                    loadingIndicator.classList.add('d-none');
+                    errorMessage.textContent = '请求出错：' + error.message;
+                    errorSection.classList.remove('d-none');
+                    
+                    // 请求出错，也停止重试
+                    if (window.retryTimer) {
+                        clearInterval(window.retryTimer);
+                        window.retryTimer = null;
+                    }
+                    if (window.retryTimeoutTimer) {
+                        clearTimeout(window.retryTimeoutTimer);
+                        window.retryTimeoutTimer = null;
+                    }
+                    
+                    // 恢复按钮状态
+                    document.getElementById('checkButton').disabled = false;
+                    document.getElementById('checkButton').innerHTML = '<span class="icon icon-search"></span>获取验证码';
+                });
+            }
+            
+            // 渲染邮件列表
+            function renderEmails(emails) {
+                emailList.innerHTML = '';
+                
+                if (!emails || emails.length === 0) {
+                    return;
+                }
+                
+                emails.forEach(email => {
+                    const emailItem = document.createElement('div');
+                    emailItem.className = 'email-item';
+                    
+                    const emailHeader = document.createElement('div');
+                    emailHeader.className = 'email-header';
+                    
+                    const subject = document.createElement('h4');
+                    subject.textContent = email.subject;
+                    emailHeader.appendChild(subject);
+                    
+                    const emailMeta = document.createElement('div');
+                    emailMeta.className = 'email-meta';
+                    emailMeta.innerHTML = `
+                        <div><strong>发件人:</strong> ${email.from}</div>
+                        <div><strong>收件人:</strong> ${email.to}</div>
+                        <div><strong>日期:</strong> ${email.date}</div>
+                    `;
+                    emailHeader.appendChild(emailMeta);
+                    emailItem.appendChild(emailHeader);
+                    
+                    const body = document.createElement('div');
+                    body.className = 'email-body';
+                    
+                    if (email.verification_code) {
+                        const highlightedBody = email.body.replace(
+                            new RegExp(email.verification_code, 'g'), 
+                            `<span class="highlight">${email.verification_code}</span>`
+                        );
+                        body.innerHTML = highlightedBody;
+                    } else {
+                        body.textContent = email.body;
+                    }
+                    
+                    emailItem.appendChild(body);
+                    emailList.appendChild(emailItem);
+                });
+            }
+        });
+    </script>
+</body>
+</html> 
